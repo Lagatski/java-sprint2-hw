@@ -6,10 +6,9 @@ public class Task {
     protected Integer id;
     protected String status;
 
-    public Task(String name, String description, Integer id) {
+    public Task(String name, String description) {
         this.name = name;
         this.description = description;
-        this.id = id;
         status = "NEW";
     }
 
@@ -17,7 +16,6 @@ public class Task {
         return id;
     }
 
-    // Переопределяем на всякий случай + для тестов
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

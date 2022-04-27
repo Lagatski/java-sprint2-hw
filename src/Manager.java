@@ -22,7 +22,7 @@ public class Manager {
      *   getTasks - возвращает все объекты типа Task;
      *   getSubTasks - возвращает все объекты типа Subtask;
      *   getEpicTasks - возвращает все объекты типа Epic;
-     *   getId() - возвращает id для новой задачи, после увеличивает её на 1;
+     *   generateId() - приватный метод для возвращения id для новой задачи, после увеличивает её на 1;
      *   getTask(Integer id) - Получение задачи типа Task, @Integer id - идентификатор Task задачи;
      *   getEpicTask(Integer id) - Получение задачи типа Epic, @Integer id - идентификатор Epic задачи;
      *   getSubTask(Integer id) - Получение задачи типа Subtask, @Integer id - идентификатор Subtask задачи;
@@ -59,11 +59,11 @@ public class Manager {
         return (epicList);
     }
 
-    public Integer getId() {
+    private Integer generateId() {
         return id++;
     }
 
-    public Task getTask(Integer id) { // Получение задачи по идентификатору
+    public Task getTask(Integer id) {
         for (Integer integer : tasks.keySet()) {
             if (integer.equals(id)) {
                 return (tasks.get(id));
@@ -188,21 +188,26 @@ public class Manager {
      */
 
     public void createNewTask(Task task) {
-        tasks.put(task.getId(), task);
+        Integer id = generateId(); // Генерируем новый Id
+        task.id = id;
+        tasks.put(id, task);
     }
 
     public void createNewEpicTask(Epic task) {
-        epics.put(task.getId(), task);
+        Integer id = generateId(); // Генерируем новый Id
+        task.id = id;
+        epics.put(id, task);
     }
 
     public void createNewSubTask(Subtask task) {
         if (epics.containsKey(task.epicId)) { // Проверили что наша коллекция Эпиков содержит данный id;
-            Epic tmpEpic = epics.get(task.epicId); // Получаем объект класса Epic из коллекции
+            Integer id = generateId();                        // Генерируем новый Id
+            task.id = id;
+            Epic tmpEpic = epics.get(task.epicId);            // Получаем объект класса Epic из коллекции
             ArrayList<Integer> tmpSubId = tmpEpic.idSubtasks; // Получаем список подзадач из текущего эпика
             tmpSubId.add(task.id);
-            tmpEpic.idSubtasks = tmpSubId; // Добавили в список id новой подзадачи
-            epics.put(tmpEpic.getId(), tmpEpic); // Обновили эпик
-            subTasks.put(task.getId(), task); // Добавили в подзадачи
+            tmpEpic.idSubtasks = tmpSubId;      // Добавили и сохранили список Эпика id новой подзадачи
+            subTasks.put(id, task);             // Добавили в подзадачи
         }
     }
 
@@ -348,11 +353,8 @@ public class Manager {
                 Task oldTask = tasks.get(integer); // Получаем старый объект для сравнения статусов
                 if (oldTask.status.equals(newStatus)) {
                     return "";
-                } else if (newStatus.equals("DONE")
-                        || newStatus.equals("NEW") || newStatus.equals("IN_PROGRESS")) {
-                    return newStatus;
                 } else {
-                    return "ERROR"; // Если вдруг по ошибке подаётся другой статус, который мы не обрабатываем
+                    return newStatus;
                 }
             }
         }
@@ -370,11 +372,8 @@ public class Manager {
                 Task oldTask = epics.get(integer); // Получаем старый объект для сравнения статусов
                 if (oldTask.status.equals(newStatus)) {
                     return "";
-                } else if (newStatus.equals("DONE")
-                        || newStatus.equals("NEW") || newStatus.equals("IN_PROGRESS")) {
-                    return newStatus;
                 } else {
-                    return "ERROR"; // Если вдруг по ошибке подаётся другой статус, который мы не обрабатываем
+                    return newStatus;
                 }
             }
         }
@@ -392,11 +391,8 @@ public class Manager {
                 Task oldTask = subTasks.get(integer); // Получаем старый объект для сравнения статусов
                 if (oldTask.status.equals(newStatus)) {
                     return "";
-                } else if (newStatus.equals("DONE")
-                        || newStatus.equals("NEW") || newStatus.equals("IN_PROGRESS")) {
-                    return newStatus;
                 } else {
-                    return "ERROR"; // Если вдруг по ошибке подаётся другой статус, который мы не обрабатываем
+                    return newStatus;
                 }
             }
         }

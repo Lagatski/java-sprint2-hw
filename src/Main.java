@@ -11,32 +11,27 @@ public class Main {
         Integer epicId = 0;
 
         // Первый эпик
-        idList = new ArrayList<>();
-        epicId = manager.getId();
-        Epic epic = new Epic("movie", "now", epicId, idList);
+        Epic epic = new Epic("movie", "now");
         manager.createNewEpicTask(epic);
 
-        id = manager.getId();
-        Subtask task1 = new Subtask("collect boxes", "What", id, epicId);
+        epicId = manager.getEpicTask(0).id;
+        Subtask task1 = new Subtask("collect boxes", "What", epicId);
         manager.createNewSubTask(task1);
 
-        id = manager.getId();
-        Subtask task2 = new Subtask("pack the cat", "Where", id, epicId);
+        epicId = manager.getEpicTask(0).id;
+        Subtask task2 = new Subtask("pack the cat", "Where", epicId);
         manager.createNewSubTask(task2);
 
         // Второй эпик
-        idList = new ArrayList<>();
-        epicId = manager.getId();
-        Epic epic2 = new Epic("buy food", "Where", epicId, idList);
+        Epic epic2 = new Epic("buy food", "Where");
         manager.createNewEpicTask(epic2);
 
-        id = manager.getId();
-        Subtask task3 = new Subtask("get money", "When", id, epicId);
+        epicId = manager.getEpicTask(3).id;
+        Subtask task3 = new Subtask("get money", "When", epicId);
         manager.createNewSubTask(task3);
 
 
         // 1.Выводим на печать весь список:
-        //System.out.println(manager.getTaskList());
         System.out.println("1:");
         printAll(manager);
         System.out.println("\n");
@@ -60,7 +55,9 @@ public class Main {
         Epic tmpEpic = manager.getEpicTask(0);
         epicId = tmpEpic.getId();
         idList = tmpEpic.idSubtasks;
-        epic2 = new Epic("buy FOOOOD", "Where", epicId, idList);
+        epic2 = new Epic("buy FOOOOD", "Where");
+        epic2.id = epicId;
+        epic2.idSubtasks = idList;
         epic2.status = "DONE";
         manager.updateEpicTask(epic2);
         printAll(manager);
@@ -70,9 +67,9 @@ public class Main {
         // 4.1. Пробую обновить 1 задачу и снова распечатать полный список
         System.out.println("4.1:");
         tmpEpic = manager.getEpicTask(0);
-        epicId = tmpEpic.getId();
-        idList = tmpEpic.idSubtasks;
-        epic2 = new Epic("buy FOOOOD", "Where", epicId, idList);
+        epic2 = new Epic("buy FOOOOD", "Where");
+        epic2.id = tmpEpic.getId();
+        epic2.idSubtasks = tmpEpic.idSubtasks;
         epic2.status = "NEW";
         manager.updateEpicTask(epic2);
         printAll(manager);
@@ -82,9 +79,9 @@ public class Main {
         // 4.2. Пробую обновить 1 ПОДзадачу и снова распечатать полный список
         System.out.println("4.2:");
         Subtask tmpSub = manager.getSubTask(1);
-        id = tmpSub.getId();
-        epicId = tmpSub.epicId;
-        task1 = new Subtask("COLLECT BOXES", "Where", id, epicId);
+        task1 = new Subtask("COLLECT BOXES", "Where", epicId);
+        task1.epicId = tmpSub.epicId;
+        task1.id = tmpSub.getId();
         task1.status = "DONE";
         manager.updateSubTask(task1);
         printAll(manager);
@@ -94,9 +91,9 @@ public class Main {
         // 4.3. Пробую обновить 1 ПОДзадачу и снова распечатать полный список
         System.out.println("4.3:");
         tmpSub = manager.getSubTask(2);
-        id = tmpSub.getId();
-        epicId = tmpSub.epicId;
-        task2 = new Subtask("COLLECT ITEMS", "Where", id, epicId);
+        task2 = new Subtask("COLLECT ITEMS", "Where", epicId);
+        task2.id = tmpSub.getId();
+        task2.epicId = tmpSub.epicId;
         task2.status = "DONE";
         manager.updateSubTask(task2);
         printAll(manager);
@@ -106,9 +103,9 @@ public class Main {
         // 4.4. Пробую обновить 1 ПОДзадачу и снова распечатать полный список
         System.out.println("4.4:");
         tmpSub = manager.getSubTask(2);
-        id = tmpSub.getId();
-        epicId = tmpSub.epicId;
-        task2 = new Subtask("COLLECT ITEMS", "Where", id, epicId);
+        task2 = new Subtask("COLLECT ITEMS", "Where", epicId);
+        task2.id = tmpSub.getId();
+        task2.epicId = tmpSub.epicId;
         task2.status = "IN_PROGRESS";
         manager.updateSubTask(task2);
         printAll(manager);
