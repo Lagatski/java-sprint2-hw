@@ -1,15 +1,16 @@
+import java.io.ObjectInputFilter;
 import java.util.Objects;
 
 public class Task {
     protected String name;
     protected String description;
     protected Integer id;
-    protected String status;
+    protected Statuses status;
 
     public Task(String name, String description) {
         this.name = name;
         this.description = description;
-        status = "NEW";
+        status = Statuses.NEW;
     }
 
     public Integer getId() {
