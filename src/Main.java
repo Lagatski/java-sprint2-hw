@@ -1,8 +1,9 @@
 import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        TaskManager InMemoryTask = Manager.getDefault();
+        TaskManager InMemoryTask = Managers.getDefault();
         ArrayList<Integer> idList;
         ArrayList<Task> tasks;
         ArrayList<Epic> epicTasks;
@@ -14,11 +15,11 @@ public class Main {
         Epic epic = new Epic("movie", "now");
         InMemoryTask.createNewEpicTask(epic);
 
-        epicId = InMemoryTask.getEpicTask(0).id;
+        epicId = InMemoryTask.getEpic(0).id;
         Subtask task1 = new Subtask("collect boxes", "What", epicId);
         InMemoryTask.createNewSubTask(task1);
 
-        epicId = InMemoryTask.getEpicTask(0).id;
+        epicId = InMemoryTask.getEpic(0).id;
         Subtask task2 = new Subtask("pack the cat", "Where", epicId);
         InMemoryTask.createNewSubTask(task2);
 
@@ -26,7 +27,7 @@ public class Main {
         Epic epic2 = new Epic("buy food", "Where");
         InMemoryTask.createNewEpicTask(epic2);
 
-        epicId = InMemoryTask.getEpicTask(3).id;
+        epicId = InMemoryTask.getEpic(3).id;
         Subtask task3 = new Subtask("get money", "When", epicId);
         InMemoryTask.createNewSubTask(task3);
 
@@ -39,7 +40,7 @@ public class Main {
 
         // HISTORY.Вывожу историю просмотров
         System.out.println("HISTORY:");
-        ArrayList<Task> history = InMemoryTask.getHistory();
+        List<Task> history = InMemoryTask.getHistory();
         for (Task task : history) {
             System.out.println(task);
         }
@@ -48,8 +49,8 @@ public class Main {
 
         // 2.Пробую вывести на печать по id;
         System.out.println("2:");
-        System.out.println(InMemoryTask.getEpicTask(0));
-        System.out.println(InMemoryTask.getSubTask(1));
+        System.out.println(InMemoryTask.getEpic(0));
+        System.out.println(InMemoryTask.getSub(1));
         System.out.println("\n");
 
 
@@ -61,7 +62,7 @@ public class Main {
 
         // 4.Пробую обновить 1 задачу и снова распечатать полный список
         System.out.println("4:");
-        Epic tmpEpic = InMemoryTask.getEpicTask(0);
+        Epic tmpEpic = InMemoryTask.getEpic(0);
         epicId = tmpEpic.getId();
         idList = tmpEpic.idSubtasks;
         epic2 = new Epic("buy FOOOOD", "Where");
@@ -75,7 +76,7 @@ public class Main {
 
         // 4.1. Пробую обновить 1 задачу и снова распечатать полный список
         System.out.println("4.1:");
-        tmpEpic = InMemoryTask.getEpicTask(0);
+        tmpEpic = InMemoryTask.getEpic(0);
         epic2 = new Epic("buy FOOOOD", "Where");
         epic2.id = tmpEpic.getId();
         epic2.idSubtasks = tmpEpic.idSubtasks;
@@ -87,7 +88,7 @@ public class Main {
 
         // 4.2. Пробую обновить 1 ПОДзадачу и снова распечатать полный список
         System.out.println("4.2:");
-        Subtask tmpSub = InMemoryTask.getSubTask(1);
+        Subtask tmpSub = InMemoryTask.getSub(1);
         task1 = new Subtask("COLLECT BOXES", "Where", epicId);
         task1.epicId = tmpSub.epicId;
         task1.id = tmpSub.getId();
@@ -99,7 +100,7 @@ public class Main {
 
         // 4.3. Пробую обновить 1 ПОДзадачу и снова распечатать полный список
         System.out.println("4.3:");
-        tmpSub = InMemoryTask.getSubTask(2);
+        tmpSub = InMemoryTask.getSub(2);
         task2 = new Subtask("COLLECT ITEMS", "Where", epicId);
         task2.id = tmpSub.getId();
         task2.epicId = tmpSub.epicId;
@@ -111,7 +112,7 @@ public class Main {
 
         // 4.4. Пробую обновить 1 ПОДзадачу и снова распечатать полный список
         System.out.println("4.4:");
-        tmpSub = InMemoryTask.getSubTask(2);
+        tmpSub = InMemoryTask.getSub(2);
         task2 = new Subtask("COLLECT ITEMS", "Where", epicId);
         task2.id = tmpSub.getId();
         task2.epicId = tmpSub.epicId;
@@ -123,6 +124,9 @@ public class Main {
 
         // HISTORY.Вывожу историю просмотров
         System.out.println("HISTORY:");
+        tmpSub = InMemoryTask.getSub(2); // Добиваю историю просмотров для теста
+        tmpSub = InMemoryTask.getSub(1);
+        tmpSub = InMemoryTask.getSub(4);
         history = InMemoryTask.getHistory();
         for (Task task : history) {
             System.out.println(task);
@@ -147,9 +151,9 @@ public class Main {
     }
 
      private static void printAll(TaskManager InMemoryTask) {
-        ArrayList<Task> tasks;
-        ArrayList<Epic> epicTasks;
-        ArrayList<Subtask> subTasks;
+        List<Task> tasks;
+        List<Epic> epicTasks;
+        List<Subtask> subTasks;
 
         tasks = InMemoryTask.getTasks();
         for (Task task : tasks) {

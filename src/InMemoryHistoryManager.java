@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class InMemoryHistoryManager implements HistoryManager {
@@ -11,16 +12,14 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void add(Task newTask) {
-        for (Task task : historyTasks) {
-            if (task.getId().equals(newTask.getId())) {
-                return;
-            }
+        if (historyTasks.size() >= 10) {
+            historyTasks.remove(0);
         }
         historyTasks.add(newTask);
     }
 
     @Override
-    public ArrayList<Task> getHistory() {
+    public List<Task> getHistory() {
         return historyTasks;
     }
 
