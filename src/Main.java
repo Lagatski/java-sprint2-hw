@@ -1,5 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
+import model.*;
+import manager.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -141,11 +143,16 @@ public class Main {
         printAll(InMemoryTask);
 
 
-        // 6.Пробую удалить всё
+        // 6.Пробую удалить только сабтаски
+        System.out.println("6:");
+        InMemoryTask.deleteSubTasks();
+        printAll(InMemoryTask);
+
+
+        // 7.Пробую удалить всё
         System.out.println("7:");
         InMemoryTask.deleteTasks();
         InMemoryTask.deleteEpicTasks();
-        InMemoryTask.deleteSubTasks();
         printAll(InMemoryTask);
 
     }

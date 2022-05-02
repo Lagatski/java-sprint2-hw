@@ -1,35 +1,38 @@
+package model;
+
+import java.util.ArrayList;
 import java.util.Objects;
 
-public class Subtask extends Task {
-    protected Integer epicId;
+public class Epic extends Task {
+    public ArrayList<Integer> idSubtasks;
 
-    public Subtask(String name, String description, Integer epicId) {
+    public Epic(String name, String description) {
         super(name, description);
-        this.epicId = epicId;
+        this.idSubtasks = new ArrayList<>();
     }
 
     @Override
     public String toString() {
-        return "Subtask{" +
+        return "Epic{" +
                 "name='" + super.name + '\'' +
                 ", description='" + super.description + '\'' +
                 ", id=" + super.id +
                 ", status='" + super.status + '\'' +
-                ", epicId=" + epicId +
+                ", idSubtasks=" + idSubtasks +
                 '}';
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Subtask)) return false;
+        if (!(o instanceof Epic)) return false;
         if (!super.equals(o)) return false;
-        Subtask subtask = (Subtask) o;
-        return epicId.equals(subtask.epicId);
+        Epic epic = (Epic) o;
+        return idSubtasks.equals(epic.idSubtasks);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), epicId);
+        return Objects.hash(super.hashCode(), idSubtasks);
     }
 }

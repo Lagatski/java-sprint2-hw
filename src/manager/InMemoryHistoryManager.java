@@ -1,6 +1,9 @@
+package manager;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import model.Task;
 
 public class InMemoryHistoryManager implements HistoryManager {
     private ArrayList<Task> historyTasks;

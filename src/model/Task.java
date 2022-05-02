@@ -1,11 +1,12 @@
-import java.io.ObjectInputFilter;
+package model;
+
 import java.util.Objects;
 
 public class Task {
     protected String name;
     protected String description;
-    protected Integer id;
-    protected Statuses status;
+    public Integer id;
+    public Statuses status;
 
     public Task(String name, String description) {
         this.name = name;
