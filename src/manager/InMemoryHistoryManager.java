@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import model.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    public CustomLinkedList<Task> tasks;
+    private CustomLinkedList<Task> tasks;
     private HashMap<Integer, Node<Task>> historyTasks;
 
     public InMemoryHistoryManager() {
