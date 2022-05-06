@@ -43,8 +43,10 @@ public class Main {
         // HISTORY.Вывожу историю просмотров
         System.out.println("HISTORY:");
         List<Task> history = InMemoryTask.getHistory();
-        for (Task task : history) {
-            System.out.println(task);
+        if (history != null) {
+            for (Task task : history) {
+                System.out.println(task);
+            }
         }
         System.out.println("\n");
 
@@ -70,7 +72,7 @@ public class Main {
         epic2 = new Epic("buy FOOOOD", "Where");
         epic2.id = epicId;
         epic2.idSubtasks = idList;
-        epic2.status = Statuses.DONE;
+        epic2.status = Status.DONE;
         InMemoryTask.updateEpicTask(epic2);
         printAll(InMemoryTask);
         System.out.println("\n");
@@ -82,7 +84,7 @@ public class Main {
         epic2 = new Epic("buy FOOOOD", "Where");
         epic2.id = tmpEpic.getId();
         epic2.idSubtasks = tmpEpic.idSubtasks;
-        epic2.status = Statuses.NEW;
+        epic2.status = Status.NEW;
         InMemoryTask.updateEpicTask(epic2);
         printAll(InMemoryTask);
         System.out.println("\n");
@@ -94,7 +96,7 @@ public class Main {
         task1 = new Subtask("COLLECT BOXES", "Where", epicId);
         task1.epicId = tmpSub.epicId;
         task1.id = tmpSub.getId();
-        task1.status = Statuses.DONE;
+        task1.status = Status.DONE;
         InMemoryTask.updateSubTask(task1);
         printAll(InMemoryTask);
         System.out.println("\n");
@@ -106,7 +108,7 @@ public class Main {
         task2 = new Subtask("COLLECT ITEMS", "Where", epicId);
         task2.id = tmpSub.getId();
         task2.epicId = tmpSub.epicId;
-        task2.status = Statuses.DONE;
+        task2.status = Status.DONE;
         InMemoryTask.updateSubTask(task2);
         printAll(InMemoryTask);
         System.out.println("\n");
@@ -118,7 +120,7 @@ public class Main {
         task2 = new Subtask("COLLECT ITEMS", "Where", epicId);
         task2.id = tmpSub.getId();
         task2.epicId = tmpSub.epicId;
-        task2.status = Statuses.IN_PROGRESS;
+        task2.status = Status.IN_PROGRESS;
         InMemoryTask.updateSubTask(task2);
         printAll(InMemoryTask);
         System.out.println("\n");
@@ -130,8 +132,10 @@ public class Main {
         tmpSub = InMemoryTask.getSub(1);
         tmpSub = InMemoryTask.getSub(4);
         history = InMemoryTask.getHistory();
-        for (Task task : history) {
-            System.out.println(task);
+        if (history != null) {
+            for (Task task : history) {
+                System.out.println(task);
+            }
         }
         System.out.println("\n");
 
@@ -141,19 +145,38 @@ public class Main {
         InMemoryTask.deleteEpicTask(3); // Эпик
         InMemoryTask.deleteSubTask(2); // Подзадачу 0-ого эпика
         printAll(InMemoryTask);
+        System.out.println("\n");
 
 
-        // 6.Пробую удалить только сабтаски
+        // HISTORY.Вывожу историю просмотров
+        System.out.println("HISTORY:");
+        history = InMemoryTask.getHistory();
+        if (history != null) {
+            for (Task task : history) {
+                System.out.println(task);
+            }
+        }
+        System.out.println("\n");
+
+
+        // 6.Пробую удалить всё
         System.out.println("6:");
         InMemoryTask.deleteSubTasks();
-        printAll(InMemoryTask);
-
-
-        // 7.Пробую удалить всё
-        System.out.println("7:");
         InMemoryTask.deleteTasks();
         InMemoryTask.deleteEpicTasks();
         printAll(InMemoryTask);
+        System.out.println("\n");
+
+
+        // HISTORY.Вывожу историю просмотров
+        System.out.println("HISTORY:");
+        history = InMemoryTask.getHistory();
+        if (history != null) {
+            for (Task task : history) {
+                System.out.println(task);
+            }
+        }
+        System.out.println("\n");
 
     }
 

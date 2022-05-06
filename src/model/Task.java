@@ -6,12 +6,12 @@ public class Task {
     protected String name;
     protected String description;
     public Integer id;
-    public Statuses status;
+    public Status status;
 
     public Task(String name, String description) {
         this.name = name;
         this.description = description;
-        status = Statuses.NEW;
+        status = Status.NEW;
     }
 
     public Integer getId() {
@@ -23,7 +23,8 @@ public class Task {
         if (this == o) return true;
         if (!(o instanceof Task)) return false;
         Task task = (Task) o;
-        return Objects.equals(name, task.name) && Objects.equals(description, task.description) && Objects.equals(getId(), task.getId()) && Objects.equals(status, task.status);
+        return Objects.equals(name, task.name) && Objects.equals(description, task.description)
+                && Objects.equals(getId(), task.getId()) && Objects.equals(status, task.status);
     }
 
     @Override
