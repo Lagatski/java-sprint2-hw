@@ -11,7 +11,7 @@ public class Main {
      */
 
     public static void main(String[] args) {
-        TaskManager InFileTask = Managers.loadFromFile(new File("../resources/saveTasks.csv"));
+        TaskManager InFileTask = Managers.loadFromFile(new File("../resources/storage/saveTasks.csv"));
 
         ArrayList<Integer> idList;
         ArrayList<Task> tasks;
