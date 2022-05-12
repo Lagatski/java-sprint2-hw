@@ -135,9 +135,9 @@ public class Main {
 
         // HISTORY.Вывожу историю просмотров
         System.out.println("HISTORY:");
-        Subtask tmpSub = InFileTask.getSub(4); // Добиваю историю просмотров для теста
-        tmpSub = InFileTask.getSub(1);
+        Subtask tmpSub = InFileTask.getSub(1); // Добиваю историю просмотров для теста
         tmpSub = InFileTask.getSub(2);
+        tmpSub = InFileTask.getSub(4);
         List<Task> history = InFileTask.getHistory();
         if (history != null) {
             for (Task task : history) {
