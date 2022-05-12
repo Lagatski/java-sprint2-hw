@@ -9,11 +9,11 @@ import model.*;
 
 public class InMemoryTaskManager implements TaskManager {
     // Коллекции для сохранения задач:
-    private HashMap<Integer, Task> tasks;
-    private HashMap<Integer, Epic> epics;
-    private HashMap<Integer, Subtask> subTasks;
-    private Integer id;
-    private HistoryManager historyManager;
+    protected HashMap<Integer, Task> tasks;
+    protected HashMap<Integer, Epic> epics;
+    protected HashMap<Integer, Subtask> subTasks;
+    protected Integer id;
+    protected HistoryManager historyManager;
 
     public InMemoryTaskManager() {
         epics = new HashMap<>();
@@ -70,9 +70,10 @@ public class InMemoryTaskManager implements TaskManager {
         ArrayList<Subtask> subTask = new ArrayList<>();
         if (epics.containsKey(id)) {
             Epic tempEpic = epics.get(id);
-            ArrayList<Integer> subTaskId = tempEpic.idSubtasks; // Нашли номера id в подзачах
+            ArrayList<Integer> subTaskId = tempEpic.idSubtasks;
             for (Integer subId : subTaskId) {
                 subTask.add(subTasks.get(subId));
+                historyManager.add(subTasks.get(subId));
             }
             return subTask;
         }
@@ -85,7 +86,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void deleteTasks() { // Удаление всех задач
+    public void deleteTasks() {
         for (Integer task : tasks.keySet()) {
             historyManager.remove(task);
         }
