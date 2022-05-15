@@ -20,13 +20,17 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         if (load) {
             try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file, StandardCharsets.UTF_8))) {
                 if (bufferedReader.ready()) {
-                    Integer id_line = 0;
-                    Map<Integer, String> lines = new LinkedHashMap<>();
                     bufferedReader.readLine();
                     while (bufferedReader.ready()) {
-                        lines.put(++id_line, bufferedReader.readLine());
+                        String line = bufferedReader.readLine();
+                        if (line.equals("")) {
+                            line = bufferedReader.readLine();
+                            String[] idInHistory = line.split(",");
+                            recoveryHistory(idInHistory);
+                            break;
+                        }
+                        recoveryTask(line);
                     }
-                    recoveryTaskAndHistory(lines);
                 }
             } catch (IOException e) {
                 throw new ManagerSaveException("Can't read from file: " + file.getName());
@@ -109,50 +113,45 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return sub;
     }
 
-    private void recoveryTaskAndHistory(Map<Integer, String> lines) {
-        String[] idInHistory = lines.get(lines.size()).split(",");
-        for (Integer numOfString = 1; numOfString < lines.size()-1; numOfString++) {
-            String[] elements = lines.get(numOfString).split(",");
-            if (id <= Integer.parseInt(elements[0])) {
-                id = Integer.parseInt(elements[0]) + 1;
+    private void recoveryTask(String line) {
+        String[] elements = line.split(",");
+        if (id <= Integer.parseInt(elements[0])) {
+            id = Integer.parseInt(elements[0]) + 1;
+        }
+        switch (elements[1]) {
+            case ("TASK"): {
+                Task task = new Task(Integer.parseInt(elements[0]), elements[2],
+                        elements[4], Status.valueOf(elements[3]));
+                tasks.put(task.getId(), task);
+                break;
             }
-            switch (elements[1]) {
-                case ("TASK"): {
-                    Task task = new Task(Integer.parseInt(elements[0]), elements[2],
-                            elements[4], Status.valueOf(elements[3]));
-                    tasks.put(task.getId(), task);
-                    for (String s : idInHistory) {
-                        if (task.getId().equals(Integer.parseInt(s))) {
-                            historyManager.add(task);
-                        }
-                    }
-                    break;
-                }
-                case ("EPIC"): {
-                    Epic epic = new Epic(Integer.parseInt(elements[0]), elements[2],
-                            elements[4], Status.valueOf(elements[3]));
-                    epics.put(epic.getId(), epic);
-                    for (String s : idInHistory) {
-                        if (epic.getId().equals(Integer.parseInt(s))) {
-                            historyManager.add(epic);
-                        }
-                    }
-                    break;
-                }
-                case ("SUBTASK"): {
-                    Subtask sub = new Subtask(Integer.parseInt(elements[0]), elements[2],
-                            elements[4], Status.valueOf(elements[3]), Integer.parseInt(elements[5]));
-                    subTasks.put(sub.getId(), sub);
-                    epics.get(sub.getEpicId()).getIdSubtasks().add(sub.getId()); // Добавили id в список подзадач эпика
-                    for (String s : idInHistory) {
-                        if (sub.getId().equals(Integer.parseInt(s))) {
-                            historyManager.add(sub);
-                        }
-                    }
-                    break;
-                }
-                default:
-                    break;
+            case ("EPIC"): {
+                Epic epic = new Epic(Integer.parseInt(elements[0]), elements[2],
+                        elements[4], Status.valueOf(elements[3]));
+                epics.put(epic.getId(), epic);
+                break;
+            }
+            case ("SUBTASK"): {
+                Subtask sub = new Subtask(Integer.parseInt(elements[0]), elements[2],
+                        elements[4], Status.valueOf(elements[3]), Integer.parseInt(elements[5]));
+                subTasks.put(sub.getId(), sub);
+                epics.get(sub.getEpicId()).getIdSubtasks().add(sub.getId()); // Добавили id в список подзадач эпика
+                break;
+            }
+            default:
+                break;
+        }
+    }
+
+    private void recoveryHistory(String[] idInHistory) {
+        for (String elem : idInHistory) {
+            Integer id = Integer.parseInt(elem);
+            if (tasks.containsKey(id)) {
+                historyManager.add(tasks.get(id));
+            } else if (epics.containsKey(id)) {
+                historyManager.add(epics.get(id));
+            } else {
+                historyManager.add(subTasks.get(id));
             }
         }
     }
