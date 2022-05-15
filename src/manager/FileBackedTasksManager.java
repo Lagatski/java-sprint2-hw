@@ -15,21 +15,23 @@ import java.util.*;
 public class FileBackedTasksManager extends InMemoryTaskManager {
     private final File file;
 
-    public FileBackedTasksManager(File file) {
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file, StandardCharsets.UTF_8))) {
-            if (bufferedReader.ready()) {
-                Integer id = 0;
-                Map<Integer, String> lines = new LinkedHashMap<>();
-                bufferedReader.readLine();
-                while (bufferedReader.ready()) {
-                    lines.put(++id, bufferedReader.readLine());
-                }
-                recoveryTaskAndHistory(lines, id);
-            }
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
+    public FileBackedTasksManager(File file, boolean load) {
         this.file = file;
+        if (load) {
+            try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file, StandardCharsets.UTF_8))) {
+                if (bufferedReader.ready()) {
+                    Integer id_line = 0;
+                    Map<Integer, String> lines = new LinkedHashMap<>();
+                    bufferedReader.readLine();
+                    while (bufferedReader.ready()) {
+                        lines.put(++id_line, bufferedReader.readLine());
+                    }
+                    recoveryTaskAndHistory(lines);
+                }
+            } catch (IOException e) {
+                throw new ManagerSaveException("Can't read from file: " + file.getName());
+            }
+        }
     }
 
     @Override
@@ -107,67 +109,57 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return sub;
     }
 
-    private void recoveryTaskAndHistory(Map<Integer, String> lines, Integer mapSize) {
-        String[] idInHistory = lines.get(mapSize).split(",");
-
-        for (Integer numOfString = 1; numOfString < mapSize-1; numOfString++) {
+    private void recoveryTaskAndHistory(Map<Integer, String> lines) {
+        String[] idInHistory = lines.get(lines.size()).split(",");
+        for (Integer numOfString = 1; numOfString < lines.size()-1; numOfString++) {
             String[] elements = lines.get(numOfString).split(",");
-
-            if (elements[1].equals("TASK")) {
-                Task task = new Task(elements[2], elements[4]);
-                task.id = Integer.parseInt(elements[0]);
-                if (elements[3].equals("NEW")) {
-                    task.status = Status.NEW;
-                } else if (elements[3].equals("DONE")) {
-                    task.status = Status.DONE;
-                } else if (elements[3].equals("IN_PROGRESS")) {
-                    task.status = Status.IN_PROGRESS;
-                }
-                tasks.put(Integer.parseInt(elements[0]), task);
-                for (String s : idInHistory) {
-                    if (task.id.equals(Integer.parseInt(s))) {
-                        historyManager.add(task);
+            if (id <= Integer.parseInt(elements[0])) {
+                id = Integer.parseInt(elements[0]) + 1;
+            }
+            switch (elements[1]) {
+                case ("TASK"): {
+                    Task task = new Task(Integer.parseInt(elements[0]), elements[2],
+                            elements[4], Status.valueOf(elements[3]));
+                    tasks.put(task.getId(), task);
+                    for (String s : idInHistory) {
+                        if (task.getId().equals(Integer.parseInt(s))) {
+                            historyManager.add(task);
+                        }
                     }
+                    break;
                 }
-            } else if (elements[1].equals("EPIC")) {
-                Epic epic = new Epic(elements[2], elements[4]);
-                epic.id = Integer.parseInt(elements[0]);
-                if (elements[3].equals("NEW")) {
-                    epic.status = Status.NEW;
-                } else if (elements[3].equals("DONE")) {
-                    epic.status = Status.DONE;
-                } else if (elements[3].equals("IN_PROGRESS")) {
-                    epic.status = Status.IN_PROGRESS;
-                }
-                epics.put(Integer.parseInt(elements[0]), epic);
-                for (String s : idInHistory) {
-                    if (epic.id.equals(Integer.parseInt(s))) {
-                        historyManager.add(epic);
+                case ("EPIC"): {
+                    Epic epic = new Epic(Integer.parseInt(elements[0]), elements[2],
+                            elements[4], Status.valueOf(elements[3]));
+                    epics.put(epic.getId(), epic);
+                    for (String s : idInHistory) {
+                        if (epic.getId().equals(Integer.parseInt(s))) {
+                            historyManager.add(epic);
+                        }
                     }
+                    break;
                 }
-            } else if (elements[1].equals("SUBTASK")) {
-                Subtask sub = new Subtask(elements[2], elements[4], Integer.parseInt(elements[5]));
-                sub.id = Integer.parseInt(elements[0]);
-                if (elements[3].equals("NEW")) {
-                    sub.status = Status.NEW;
-                } else if (elements[3].equals("DONE")) {
-                    sub.status = Status.DONE;
-                } else if (elements[3].equals("IN_PROGRESS")) {
-                    sub.status = Status.IN_PROGRESS;
-                }
-                subTasks.put(Integer.parseInt(elements[0]), sub);
-                for (String s : idInHistory) {
-                    if (sub.id.equals(Integer.parseInt(s))) {
-                        historyManager.add(sub);
+                case ("SUBTASK"): {
+                    Subtask sub = new Subtask(Integer.parseInt(elements[0]), elements[2],
+                            elements[4], Status.valueOf(elements[3]), Integer.parseInt(elements[5]));
+                    subTasks.put(sub.getId(), sub);
+                    epics.get(sub.getEpicId()).getIdSubtasks().add(sub.getId()); // Добавили id в список подзадач эпика
+                    for (String s : idInHistory) {
+                        if (sub.getId().equals(Integer.parseInt(s))) {
+                            historyManager.add(sub);
+                        }
                     }
+                    break;
                 }
+                default:
+                    break;
             }
         }
     }
 
     private void save() throws ManagerSaveException {
         try (BufferedWriter srcFile = new BufferedWriter(new FileWriter(file, StandardCharsets.UTF_8))) {
-            srcFile.write("ID,TYPE,NAME,STATUS,DESCRIPTION,EPIC\n");
+            srcFile.write("id,type,name,status,description,epic\n");
             for (Integer id : tasks.keySet()) {
                 srcFile.write(tasks.get(id).toString() + "\n");
             }
@@ -177,7 +169,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             for (Integer id : subTasks.keySet()) {
                 srcFile.write(subTasks.get(id).toString() + "\n");
             }
-            srcFile.write("HISTORY:\n");
+            srcFile.write("\n");
             if (getHistory() != null) {
                 List<Task> history = getHistory();
                 for (Task task : history) {
@@ -185,8 +177,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 }
             }
         } catch (IOException e) {
-            System.out.println(e.getMessage());
-            throw new ManagerSaveException();
+            throw new ManagerSaveException("Can't save to file: " + file.getName());
         }
     }
 }

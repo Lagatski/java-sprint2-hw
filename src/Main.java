@@ -8,7 +8,7 @@ public class Main {
 
     /*
     *   Закоментированный код проверок, чтобы можно было быстро проверить добавление в пустой файл новых задач.
-     */
+    */
 
     public static void main(String[] args) {
         TaskManager InFileTask = Managers.loadFromFile(new File("../resources/storage/saveTasks.csv"));
@@ -132,6 +132,10 @@ public class Main {
 //        printAll(InFileTask);
 //        System.out.println("\n");
 
+        // 3.Пробую вывести на печать все подзадачи для эпика по id = 0;
+        System.out.println("3:");
+        System.out.println(InFileTask.getSubTasksFromEpic(0));
+        System.out.println("\n");
 
         // HISTORY.Вывожу историю просмотров
         System.out.println("HISTORY:");
